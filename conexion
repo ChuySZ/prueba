@@ -1,0 +1,49 @@
+<?php
+$hostname='localhost';
+$database='sgmdb';
+$username='MOVILIDAD';
+$password='4nalista19.*':
+
+  /* conectamos a la bd */
+  $link = mysql_connect('localhost','usuario','password') or die('No se puede conectar a la BD');
+  mysql_select_db('nombrebd',$link) or die('No se puede seleccionar la BD');
+/* sacamos los posts de bd */
+$query = "select * from tuser order by user";
+$result = mysql_query($query,$link) or die('Query no funcional:  '.$query);
+
+/* creamos el array con los datos */
+$posts = array();
+if(mysql_num_rows($result)) {
+        while($post = mysql_fetch_assoc($result)) {
+                $posts[] = array('post'=>$post);
+        }
+}
+
+/* formateamos el resultado */
+if($format == 'json') {
+        header('Content-type: application/json');
+        echo json_encode(array('posts'=>$posts));
+}
+else {
+        header('Content-type: text/xml');
+        echo '';
+        foreach($posts as $index => $post) {
+                if(is_array($post)) {
+                        foreach($post as $key => $value) {
+                                echo '<',$key,'>';
+                                if(is_array($value)) {
+                                        foreach($value as $tag => $val) {
+                                                echo '<',$tag,'>',htmlentities($val),'';
+                                        }
+                                }
+                                echo '';
+                        }
+                }
+        }
+        echo '';
+}
+
+/* nos desconectamos de la bd */
+@mysql_close($link);
+}
+?>
